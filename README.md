@@ -2,6 +2,11 @@
 
 Markdown to LaTeX converter, wraps pandoc, appends header and footer
 
+## DEPENDENCIES
+
+- [pandoc](http://johnmacfarlane.net/pandoc/)
+- GNU sed
+
 ## SYNOPSIS
 
 ```
@@ -17,6 +22,8 @@ $ md2repotex [-t ""] [-d "\\today"] [-f] <source markdown file> # generates .tex
 ## DESCRIPTION
 
 **You must have directory named `.md2repotex.d/` in your `$HOME`**.
+
+Edit thees files to customize template for generated files.
 
 It contains these files:
 
