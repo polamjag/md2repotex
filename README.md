@@ -10,7 +10,7 @@ Markdown to LaTeX converter, wraps pandoc, appends header and footer
 ## SYNOPSIS
 
 ```
-$ md2repotex [-t ""] [-d "\\today"] [-f] <source markdown file> # generates .tex file here
+$ md2repotex [-t ""] [-d "\\today"] [-f] <source markdown file>
 ```
 
 ### OPTIONS
@@ -42,3 +42,12 @@ This file contains basic preambles for LaTeX files.
 ### `.md2repotex.d/footer`
 
 This file is basically only for `\end{document}`, but you can append anything on bottom of .tex file by editing this.
+
+## EXAMPLES
+
+```
+$ # this may opens compiled pdf
+$ md2repotex -t "my awesome report" report.md && xelatex report.tex && open report.pdf
+$ # specify date
+$ md2repotex -t "another title" -d "Wed Jan 21, 2015" report.md
+```
