@@ -1,0 +1,89 @@
+#!/bin/sh
+
+if ! hash pandoc &>/dev/null ; then
+  echo "pandoc is not installed!"
+  exit 1
+elif [ $# -lt 1 ] ; then
+  cat <<EOF
+$0 [-t ""] [-d "\today"] [-f] <source markdown file>
+
+-t ""
+  title for report
+
+-d ""
+  specify `\date{}` in LaTeX
+
+-f
+  force overwriting output file
+
+
+EXAMPLE:
+  md2repotex -t 'report title' report.md # generates report.tex
+EOF
+  exit 0
+fi
+
+# params
+TITLE=""
+DATE="\\today"
+CONFDIR="$HOME/.md2repotex.d"
+FORCE_FLAG='0'
+
+if [ ! -d "$CONFDIR" ] ; then
+  echo "Configuration files not found: $CONFDIR"
+  echo "Please refer documents on https://github.com/polamjag/md2repotex for details"
+fi
+
+while getopts 't:d:f': OPT ; do
+  case $OPT in
+    't')
+      TITLE="$OPTARG"
+      ;;
+    'd')
+      DATE="$OPTARG"
+      ;;
+    'f')
+      FORCE_FLAG='1'
+      ;;
+  esac
+done
+
+SRC="${@:${#@}}"
+SRC_FILE="$(basename $SRC)"
+SRC_DIR="$(dirname $SRC)"
+
+echo "-> Processing $SRC ..."
+
+DST_FILE="$(echo $SRC_FILE | sed -e 's/\(md\|markdown\|mkd\)$/tex/g')"
+
+TMPDIR="/tmp/mk2repotex/$(date +%G%m%d%H%M%S)-$SRC_FILE/"
+TMPFILE="$TMPDIR/report"
+
+mkdir -p "$TMPDIR"
+
+echo "-> Created tmpdir $TMPDIR"
+
+cat "$CONFDIR/header" > "$TMPFILE"
+cat "$CONFDIR/meta" >> "$TMPFILE"
+cat >>"$TMPFILE" <<EOT
+\\title{$TITLE}
+\\date{$DATE}
+\\begin{document}
+\\maketitle
+EOT
+pandoc -f markdown "$SRC" -t latex >> "$TMPFILE"
+cat "$CONFDIR/footer" >> "$TMPFILE"
+
+if [ "$FORCE_FLAG" -eq 0 -a -f "$SRC_DIR/$DST_FILE" ] ; then
+  echo "Error: $SRC_DIR"/"$DST_FILE already exists. Stopped."
+  echo "add flag '-f' to overwrite file automatically."
+  exit 1
+fi
+
+cp "$TMPFILE" "$SRC_DIR/$DST_FILE"
+
+echo "-> Copied TeX file on $SRC_DIR/$DST_FILE"
+
+rm -rf "$TMPDIR"
+
+echo "-> Removed tmpdir $TMPDIR"
