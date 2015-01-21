@@ -4,7 +4,7 @@ Markdown to LaTeX converter, wraps pandoc, appends header and footer
 
 ## DEPENDENCIES
 
-- [pandoc](http://johnmacfarlane.net/pandoc/)
+- [Pandoc](http://johnmacfarlane.net/pandoc/)
 - GNU sed
 
 ## SYNOPSIS
